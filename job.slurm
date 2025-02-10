@@ -7,6 +7,6 @@
 #SBATCH --mem=8G
 #SBATCH --time=1:00:00
 
-python ./train.py
+python train.py
 
 
