@@ -13,11 +13,13 @@ import logging
 from config import data_cfg, model_cfg, optim_cfg, train_cfg
 from models import Autoencoder
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 logging.basicConfig(level=logging.DEBUG, filename=train_cfg.log_path, filemode='a+', format='%(asctime)-15s %(levelname)-8s %(message)s')
 
 df = pd.read_csv(data_cfg.data_path)
 data = df[['# px_minus', 'py_minus', 'pz_minus']].values.astype(np.float32)
-data_tensor = torch.tensor(data)
+data_tensor = torch.tensor(data, device=device)
 
 best_loss = 999999
 
@@ -25,6 +27,7 @@ if os.path.isfile(train_cfg.best_loss_path):
     best_loss = pkl.load(open(train_cfg.best_loss_path, 'rb'))
 
 model = Autoencoder(model_cfg.input_dim, model_cfg.encoding_dim)
+model.to(device)
 optimizer = optim.Adam(model.parameters(), lr=optim_cfg.lr)
 criterion = nn.MSELoss()
 
